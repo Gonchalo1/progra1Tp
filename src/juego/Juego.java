@@ -12,15 +12,14 @@ public class Juego extends InterfaceJuego
 	private Entorno entorno;
 	
 	// Variables y métodos propios de cada grupo
-	// ...
+	Princesa princesa;
 	
 	Juego()
 	{
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 800, 600);
-		
+		princesa = new Princesa(entorno.ancho()/2,entorno.alto()-30,20,20, entorno);
 		// Inicializar lo que haga falta para el juego
-		// ...
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -34,6 +33,8 @@ public class Juego extends InterfaceJuego
 	 */
 	public void tick()
 	{
+		entorno.dibujarRectangulo(princesa.getX(),princesa.getY(),princesa.getAncho(),princesa.getAlto(),0, Color.RED);
+		princesa.moverPrincesa();
 		// Procesamiento de un instante de tiempo
 		// ...
 		
