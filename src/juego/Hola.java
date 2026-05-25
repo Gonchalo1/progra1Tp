@@ -1,5 +1,5 @@
 package juego;
 
 public class Hola {
-	//esata clase es una prueba
+	//esata clase es una kihkjgjh
 }
