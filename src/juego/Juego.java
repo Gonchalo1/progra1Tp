@@ -14,6 +14,7 @@ public class Juego extends InterfaceJuego
 	// Variables y métodos propios de cada grupo
 	private Princesa princesa;
 	private Plataforma plataforma; 
+	private Enemigo[] enemigos;
 	
 	Juego()
 	{
@@ -28,6 +29,80 @@ public class Juego extends InterfaceJuego
 		this.entorno.iniciar();
 	}
 
+		// ESTO CUENTA LOS ENEMIGOS VIVOS
+	private int contarEnemigos() {
+
+	    int cantidad = 0;
+
+	    for(int i = 0; i < enemigos.length; i++) {
+
+	        if(enemigos[i] != null) {
+	            cantidad++;
+	        }
+	    }
+
+	    return cantidad;
+	}
+
+
+	// ESTO ES PARA CREAR UN ENEMIGO
+	private void crearEnemigo() {
+
+	    for(int i = 0; i < enemigos.length; i++) {
+
+	        if(enemigos[i] == null) {
+
+	            boolean izquierda = Math.random() < 0.5;
+
+	            double x;
+
+	            if(izquierda) {
+	                x = -30;
+	            }
+	            else {
+	                x = entorno.ancho() + 30;
+	            }
+
+	            double y = 100 + Math.random() * 300;
+
+	            enemigos[i] = new Enemigo(x, y, izquierda, entorno);
+
+	            break;
+	        }
+	    }
+	}
+
+
+	// ESTO ES PARA MANTENER SIEMPRE UN MINIMO DE 3 ENEMIGOS
+	private void mantenerEnemigos() {
+
+	    while(contarEnemigos() < 3) {
+
+	        crearEnemigo();
+	    }
+	}
+
+
+	private void actualizarEnemigos() {
+
+	    for(int i = 0; i < enemigos.length; i++) {
+
+	        if(enemigos[i] != null) {
+
+	            enemigos[i].mover();
+
+	            enemigos[i].dibujar();
+
+	            // IMPORTANTISIMO:
+	            // si sale de pantalla -> NULL
+	            if(enemigos[i].fueraDePantalla()) {
+
+	                enemigos[i] = null;
+	            }
+	        }
+	    }
+	}
+
 	/**
 	 * Durante el juego, el método tick() será ejecutado en cada instante y 
 	 * por lo tanto es el método más importante de esta clase. Aquí se debe 
@@ -40,6 +115,8 @@ public class Juego extends InterfaceJuego
 		plataforma.ColisionConPrincesa(princesa);
 		princesa.moverPrincesa();
 		plataforma.dibujo();
+		actualizarEnemigos();
+		mantenerEnemigos();
 		// Procesamiento de un instante de tiempo
 		// ...
 		
