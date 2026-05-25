@@ -22,7 +22,7 @@ public class Juego extends InterfaceJuego
 		this.entorno = new Entorno(this, "Proyecto para TP", 800, 600);
 		princesa = new Princesa(entorno.ancho()/2,entorno.alto()-30,20,20, entorno);
 		plataforma = new Plataforma(entorno.ancho()/4,entorno.alto()-90,20,20,entorno);
-		
+		enemigos = new Enemigo[10];
 		// Inicializar lo que haga falta para el juego
 
 		// Inicia el juego!
