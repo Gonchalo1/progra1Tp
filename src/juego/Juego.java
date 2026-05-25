@@ -15,13 +15,17 @@ public class Juego extends InterfaceJuego
 	private Princesa princesa;
 	private Plataforma plataforma; 
 	private Enemigo[] enemigos;
+	private Proyectil proyectil;
 	
 	Juego()
 	{
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 800, 600);
 		princesa = new Princesa(entorno.ancho()/2,entorno.alto()-30,20,20, entorno);
+		//Crea la plataforma
 		plataforma = new Plataforma(entorno.ancho()/4,entorno.alto()-90,20,20,entorno);
+		// Esto va en Juego.java cuando la princesa toca el ítem:
+		this.proyectil = new Proyectil(600, entorno.alto() - 15);
 		enemigos = new Enemigo[10];
 		// Inicializar lo que haga falta para el juego
 
@@ -103,18 +107,21 @@ public class Juego extends InterfaceJuego
 	    }
 	}
 
-	/**
-	 * Durante el juego, el método tick() será ejecutado en cada instante y 
-	 * por lo tanto es el método más importante de esta clase. Aquí se debe 
-	 * actualizar el estado interno del juego para simular el paso del tiempo 
-	 * (ver el enunciado del TP para mayor detalle).
-	 */
+	//
+	 // Durante el juego, el método tick() será ejecutado en cada instante y 
+	 // por lo tanto es el método más importante de esta clase. Aquí se debe 
+	 // actualizar el estado interno del juego para simular el paso del tiempo 
+	 // (ver el enunciado del TP para mayor detalle)
 	public void tick()
 	{
 		entorno.dibujarRectangulo(princesa.getX(),princesa.getY(),princesa.getAncho(),princesa.getAlto(),0, Color.RED);
 		plataforma.ColisionConPrincesa(princesa);
 		princesa.moverPrincesa();
 		plataforma.dibujo();
+		// --- LÓGICA DEL PROYECTIL RE CORTADA ---
+				if (proyectil != null && !proyectil.disparo(princesa, entorno)) {
+					proyectil = null;
+				}
 		actualizarEnemigos();
 		mantenerEnemigos();
 		// Procesamiento de un instante de tiempo
