@@ -9,6 +9,7 @@ public class Princesa {
 	private double  ancho;
 	private double  velocidadX;
 	private double velocidadY;
+	private boolean yaSalto;
 
 	private Entorno entorno;
 	private boolean saltando;
@@ -23,12 +24,12 @@ public class Princesa {
 		this.ancho = ancho;
 		this.entorno = entorno;
 		this.velocidadX = 7;
-		this.velocidadY = 7;
+		this.velocidadY = 9;
 	}
 	
 	public boolean contarSegundos(int segundos) {
 		if (timer == true) {
-			sec= (entorno.tiempo() + 600);
+			sec= (entorno.tiempo() + 300);
 			timer = false;
 		}
 		if (entorno.tiempo() < sec) {
@@ -53,18 +54,30 @@ public class Princesa {
 	}
 	
 	private void salto() {
-		if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && saltando == false) {
-		this.y -= this.velocidadY;}
+		
+		if (entorno.seLevanto(entorno.TECLA_ARRIBA)) {
+			
+			yaSalto = true;
+			saltando = true;
+			
+		}
 		
 		if (contarSegundos(3)) {
 			saltando = true;
 		}
+		
+		if (entorno.estaPresionada(entorno.TECLA_ARRIBA) && saltando == false) {
+			if (yaSalto == false){
+				this.y -= this.velocidadY;
+			}
 		}
+	}
 
-	
+
 	public void moverPrincesa() {
 		if (this.y >= entorno.alto() - (alto/2)) {
 			saltando = false;
+			yaSalto = false;
 		}
 		
 		/*if (this.y < entorno.alto() - (alto/2)) {
@@ -139,18 +152,6 @@ public class Princesa {
 	public void setVelocidadY(double velocidadY) {
 		this.velocidadY = velocidadY;
 	}
-
-
-
-	public Entorno getEntorno() {
-		return entorno;
-	}
-
-
-	public void setEntorno(Entorno entorno) {
-		this.entorno = entorno;
-	}
-
 
 	public boolean isEnAire() {
 		return saltando;
