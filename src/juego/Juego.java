@@ -15,6 +15,8 @@ public class Juego extends InterfaceJuego
 	private Princesa princesa;
 	private Enemigo[] enemigos;
 	private GestionadorPlataformas plataformas;
+	private Proyectil proyectil;
+	private Castillo castillo;
 
 	
 	
@@ -26,6 +28,8 @@ public class Juego extends InterfaceJuego
 		plataformas = new GestionadorPlataformas();
 		plataformas.crearPlataformas(32, entorno);
 		enemigos = new Enemigo[10];
+		this.proyectil = new Proyectil(600, entorno.alto() - 15);
+		castillo = new Castillo(700, 300, "castillo.jpg", this.entorno);
 		
 		// Inicializar lo que haga falta para el juego
 
@@ -121,8 +125,13 @@ public class Juego extends InterfaceJuego
 		plataformas.colisionesPlataformas(princesa);
 		princesa.moverPrincesa();
 		plataformas.dibujarPlataformas();
+		// --- LÓGICA DEL PROYECTIL RE CORTADA ---
+		if (proyectil != null && !proyectil.disparo(princesa, entorno)) {
+			proyectil = null;
+		}
 		actualizarEnemigos();
 		mantenerEnemigos();
+		castillo.dibujar();
 		// Procesamiento de un instante de tiempo
 		// ...
 		
