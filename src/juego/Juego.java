@@ -16,18 +16,20 @@ public class Juego extends InterfaceJuego
 	private Plataforma plataforma; 
 	private Enemigo[] enemigos;
 	private Proyectil proyectil;
+	private Castillo castillo;
 	
 	Juego()
 	{
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 800, 600);
+		// Inicializar lo que haga falta para el juego
 		princesa = new Princesa(entorno.ancho()/2,entorno.alto()-30,20,20, entorno);
 		//Crea la plataforma
 		plataforma = new Plataforma(entorno.ancho()/4,entorno.alto()-90,20,20,entorno);
 		// Esto va en Juego.java cuando la princesa toca el ítem:
 		this.proyectil = new Proyectil(600, entorno.alto() - 15);
 		enemigos = new Enemigo[10];
-		// Inicializar lo que haga falta para el juego
+		castillo = new Castillo(700, 300, "juego/castillo.jpg", this.entorno);
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -124,6 +126,7 @@ public class Juego extends InterfaceJuego
 				}
 		actualizarEnemigos();
 		mantenerEnemigos();
+		castillo.dibujar();
 		// Procesamiento de un instante de tiempo
 		// ...
 		

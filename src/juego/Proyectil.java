@@ -23,6 +23,14 @@ public class Proyectil {
         this.y = y;
     }
 
+ // Dibuja el proyectil en la pantalla
+    public void dibujar(Entorno entorno) {
+        entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.RED);
+    }
+     // Controla toda la lógica del proyectil: el agarre en el suelo,
+     // el seguimiento a la princesa y el avance cuando ya fue lanzado.
+    
+    
     // Actualiza la lógica del proyectil
     public void actualizar(Princesa princesa, Entorno entorno) {
         if (!disparado) {
@@ -79,14 +87,6 @@ public class Proyectil {
         }
         return true; 
     }
-    // Dibuja el proyectil en la pantalla
-    public void dibujar(Entorno entorno) {
-        entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.RED);
-    }
-     // Controla toda la lógica del proyectil: el agarre en el suelo,
-     // el seguimiento a la princesa y el avance cuando ya fue lanzado.
-    
-    
     
     // Verifica si el proyectil se salió de los límites horizontales del mapa
     public boolean seSalioDelMapa(Entorno entorno) {
