@@ -23,10 +23,14 @@ public class Castillo {
         this.imagen = Herramientas.cargarImagen(rutaImagen); 
     }
 
-    public void dibujar() {
+    public void dibujar(double camaraX) {
         if (this.imagen != null) {
-            this.entorno.dibujarImagen(this.imagen, this.x, this.y, 0, 0.1);
+            this.entorno.dibujarImagen(this.imagen, this.x - camaraX, this.y, 0, 0.1);
         }
+    }
+    
+    public void moverCastillo(double camaraX) {
+    	this.x -= camaraX;
     }
     
     public boolean verificarVictoria(Princesa princesa) {

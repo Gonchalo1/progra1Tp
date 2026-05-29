@@ -1,5 +1,7 @@
 package juego;
 
+import java.awt.Color;
+
 import entorno.Entorno;
 
 public class Princesa {
@@ -100,7 +102,9 @@ public class Princesa {
 		gravedad();
 	}
 	
-
+	public void dibujarPrincesa() {
+		entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.RED);
+	}
 
 	// --- GETTERS Y SETTERS ---
     public double getX() { return x; }

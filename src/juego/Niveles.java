@@ -5,32 +5,64 @@ import entorno.Entorno;
 
 public class Niveles {
 
-    private Juego juego;
-    private Entorno entorno;
 
-    public Niveles(Juego juego, Entorno entorno) {
-        this.juego = juego;
+    private Entorno entorno;
+    private Princesa princesa;
+    private Castillo castillo;
+    private GestionadorPlataformas plataformas;
+    private Proyectil proyectil;
+    private GestionadorEnemigos enemigos;
+    
+    
+    private double camaraX = 0;
+	private double maxCamara = 4;
+    
+	private int nivel = 1; 
+    
+    public Niveles(Entorno entorno) {
         this.entorno = entorno;
     }
 
+    public void inicializarNivel() {
+    	princesa = new Princesa(entorno.ancho()/2,200,20,20, entorno);
+    	castillo = new Castillo(200, 550, "castillo.jpg", this.entorno);
+    	plataformas = new GestionadorPlataformas();
+		plataformas.crearPiso(300, entorno);
+		proyectil = new Proyectil(600, entorno.alto() - 15);
+		enemigos = new GestionadorEnemigos(entorno);
+		enemigos.inicializarEnemigos(10);
+    }
+    
+    
+    public void actualizarCamara(Princesa princesa) {
+		if (princesa.getX() + 50 > 600 && entorno.estaPresionada(entorno.TECLA_DERECHA)) {
+			camaraX += 1;
+		} else {
+			camaraX = 0;
+		}
+		if (camaraX > maxCamara) {
+			camaraX = maxCamara;
+		}
+	}
+    
     public void ejecutarNivel1() {
-        Princesa princesa = juego.getPrincesa();
-        Castillo castillo = juego.getCastillo();
-        GestionadorPlataformas plataformas = juego.getPlataformas();
+    	
         
-        juego.actualizarCamara(princesa);
-        entorno.dibujarRectangulo(princesa.getX(), princesa.getY(), princesa.getAncho(), princesa.getAlto(), 0, Color.RED);
+      
+        
+        actualizarCamara(princesa);
+        princesa.dibujarPrincesa();
         plataformas.colisionesPlataformas(princesa);
         princesa.moverPrincesa();
-        plataformas.dibujarPlataformas(juego.getCamaraY());
+        plataformas.dibujarPlataformas(camaraX);
         
-        if (juego.getProyectil() != null && !juego.getProyectil().disparo(princesa, entorno)) {
-            juego.setProyectil(null);
+        if (proyectil != null && !proyectil.disparo(princesa, entorno)) {
+            proyectil = null;
         }
         
-        juego.actualizarEnemigos();
-        juego.mantenerEnemigos();
-        castillo.dibujar();
+        enemigos.actualizarEnemigos();
+        enemigos.mantenerEnemigos();
+        castillo.dibujar(camaraX);
 
         // Si pasa 2 segundos en el castillo, pasamos al nivel 2
         if (castillo.verificarVictoria(princesa)) {
@@ -39,7 +71,6 @@ public class Niveles {
     }
 
     public void ejecutarNivel2() {
-        Princesa princesa = juego.getPrincesa();
         
         // 1. Suelo plano
         double nivelSueloY = 550;
@@ -63,9 +94,11 @@ public class Niveles {
     }
 
     private void cambiarAlNivel2(Princesa princesa) {
-        juego.setNivel(2); 
+        nivel = 2; 
         princesa.setX(100);
         princesa.setY(480); 
-        juego.limpiarEnemigos(); 
+        enemigos.limpiarEnemigos(); 
     }
+    
+    public int getNivel() { return nivel; }
 }
