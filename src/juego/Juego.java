@@ -1,8 +1,6 @@
 package juego;
 
 
-import java.awt.Color;
-
 import entorno.Entorno;
 import entorno.InterfaceJuego;
 
@@ -19,8 +17,10 @@ public class Juego extends InterfaceJuego
 	private Castillo castillo;
 	private double camaraY = 0;
 	private double maxCamara = 4;
-
+	private Niveles gestorNiveles;
 	
+	// CORRECCIÓN: Faltaba declarar la variable nivel que usás en el tick
+	private int nivel = 1; 
 	
 	Juego()
 	{
@@ -31,16 +31,17 @@ public class Juego extends InterfaceJuego
 		plataformas.crearPiso(300, entorno);
 		enemigos = new Enemigo[10];
 		this.proyectil = new Proyectil(600, entorno.alto() - 15);
-		castillo = new Castillo(700, 300, "castillo.jpg", this.entorno);
+		castillo = new Castillo(200, 550, "castillo.jpg", this.entorno);
 		
-		// Inicializar lo que haga falta para el juego
+		// Inicializamos el gestor de niveles
+		this.gestorNiveles = new Niveles(this, this.entorno);
 
 		// Inicia el juego!
 		this.entorno.iniciar();
 	}
 
-		
-	private void actualizarCamara(Princesa princesa) {
+	// CORRECCIÓN: 'public' para que Niveles.java lo pueda ejecutar
+	public void actualizarCamara(Princesa princesa) {
 		if (princesa.getX() + 50 > 600 && entorno.estaPresionada(entorno.TECLA_DERECHA)) {
 			camaraY += 1;
 		} else {
@@ -51,111 +52,85 @@ public class Juego extends InterfaceJuego
 		}
 	}
 	
-	
-	
-	
-	
 	// ESTO CUENTA LOS ENEMIGOS VIVOS
 	private int contarEnemigos() {
-
 	    int cantidad = 0;
-
 	    for(int i = 0; i < enemigos.length; i++) {
-
 	        if(enemigos[i] != null) {
 	            cantidad++;
 	        }
 	    }
-
 	    return cantidad;
 	}
 
-
 	// ESTO ES PARA CREAR UN ENEMIGO
 	private void crearEnemigo() {
-
 	    for(int i = 0; i < enemigos.length; i++) {
-
 	        if(enemigos[i] == null) {
-
 	            boolean izquierda = Math.random() < 0.5;
-
 	            double x;
-
 	            if(izquierda) {
 	                x = -30;
 	            }
 	            else {
 	                x = entorno.ancho() + 30;
 	            }
-
 	            double y = 100 + Math.random() * 300;
-
 	            enemigos[i] = new Enemigo(x, y, izquierda, entorno);
-
 	            break;
 	        }
 	    }
 	}
 
-
-	// ESTO ES PARA MANTENER SIEMPRE UN MINIMO DE 3 ENEMIGOS
-	private void mantenerEnemigos() {
-
+	// CORRECCIÓN: 'public' para que Niveles.java lo pueda ejecutar
+	public void mantenerEnemigos() {
 	    while(contarEnemigos() < 3) {
-
 	        crearEnemigo();
 	    }
 	}
 
-
-	private void actualizarEnemigos() {
-
+	// CORRECCIÓN: 'public' para que Niveles.java lo pueda ejecutar
+	public void actualizarEnemigos() {
 	    for(int i = 0; i < enemigos.length; i++) {
-
 	        if(enemigos[i] != null) {
-
 	            enemigos[i].mover();
-
 	            enemigos[i].dibujar();
-
-	            // IMPORTANTISIMO:
-	            // si sale de pantalla -> NULL
 	            if(enemigos[i].fueraDePantalla()) {
-
 	                enemigos[i] = null;
 	            }
 	        }
 	    }
 	}
 
-	
+	// CORRECCIÓN: Método necesario para borrar los enemigos al cambiar de nivel
+	public void limpiarEnemigos() {
+		for (int i = 0; i < enemigos.length; i++) {
+			enemigos[i] = null;
+		}
+	}
 
 	/**
-	 * Durante el juego, el método tick() será ejecutado en cada instante y 
-	 * por lo tanto es el método más importante de esta clase. Aquí se debe 
-	 * actualizar el estado interno del juego para simular el paso del tiempo 
-	 * (ver el enunciado del TP para mayor detalle).
+	 * El tick() ahora SOLO decide qué nivel se debe renderizar y procesar.
+	 * Se eliminó todo el código duplicado que estaba acá adentro.
 	 */
 	public void tick()
 	{
-		actualizarCamara(princesa);
-		entorno.dibujarRectangulo(princesa.getX(),princesa.getY(),princesa.getAncho(),princesa.getAlto(),0, Color.RED);
-		plataformas.colisionesPlataformas(princesa);
-		princesa.moverPrincesa();
-		plataformas.dibujarPlataformas(camaraY);
-		// --- LÓGICA DEL PROYECTIL RE CORTADA ---
-		if (proyectil != null && !proyectil.disparo(princesa, entorno)) {
-			proyectil = null;
+		if (this.getNivel() == 1) {
+			gestorNiveles.ejecutarNivel1();
+		} else if (this.getNivel() == 2) {
+			gestorNiveles.ejecutarNivel2();
 		}
-		actualizarEnemigos();
-		mantenerEnemigos();
-		castillo.dibujar();
-		// Procesamiento de un instante de tiempo
-		// ...
-		
 	}
 	
+	// --- GETTERS Y SETTERS ---
+	public Princesa getPrincesa() { return princesa; }
+	public Castillo getCastillo() { return castillo; }
+	public GestionadorPlataformas getPlataformas() { return plataformas; }
+	public Proyectil getProyectil() { return proyectil; }
+	public void setProyectil(Proyectil p) { this.proyectil = p; }
+	public double getCamaraY() { return camaraY; }
+	public void setNivel(int nivel) { this.nivel = nivel; }
+	public int getNivel() { return nivel; }
 
 	@SuppressWarnings("unused")
 	public static void main(String[] args)
