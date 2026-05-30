@@ -37,13 +37,13 @@ public class GestionadorPlataformas {
 		}
 	}
 	
-	public void dibujarPlataformas(double camaraY) {
+	public void dibujarPlataformas(double camaraX) {
 		for(int i = 0; i < plataformas.length; i++) {
 
 	        if(plataformas[i] != null) {
 
-	            plataformas[i].dibujo(camaraY);
-	            plataformas[i].moverPlataforma(camaraY);
+	            plataformas[i].dibujo(camaraX);
+	            plataformas[i].moverPlataforma(camaraX);
 
 	        }
 	    }
@@ -66,6 +66,14 @@ public class GestionadorPlataformas {
         }
 	}
 	
+	public double getUltimaPlat() {
+		return plataformas[plataformas.length-1].getX();
+	}
 	
+	public void limpiarPlataformas( ) {
+		for (int i = 0;i < plataformas.length;i++) {
+			plataformas[i] = null;
+		}
+	}
 	
 }

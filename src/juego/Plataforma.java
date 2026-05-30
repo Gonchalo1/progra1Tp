@@ -22,8 +22,8 @@ public class Plataforma {
 	}
 	
 	// Dibuja la plataforma 
-	public void dibujo(double camaraY) {
-		entorno.dibujarRectangulo(x - camaraY, y, ancho, alto, 0, Color.blue);
+	public void dibujo(double camaraX) {
+		entorno.dibujarRectangulo(x - camaraX, y, ancho, alto, 0, Color.blue);
 	}
 	
 	// Método que determina cuándo choca con la princesa y resuelve la colisión

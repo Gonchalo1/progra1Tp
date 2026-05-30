@@ -9,91 +9,115 @@ public class Proyectil {
     private double ancho;
     private double alto;
     private double velocidad;
-    private int direccion; // 1 = Derecha, -1 = Izquierda
+    
+    // Componentes de velocidad para permitir cualquier diagonal/dirección
+    private double vx; 
+    private double vy; 
+    
     private boolean disparado;
+    private boolean equipado; // Evita el bug de quedarse flotando en el aire
 
-    // Constructor para cuando la Princesa agarra el ítem (se equipa)
+    // Constructor para cuando el proyectil aparece en el mapa
     public Proyectil(double x, double y) {
-        this.ancho = 30; // Tamaño del cohete/rectángulo
+        this.ancho = 30; 
         this.alto = 15;
-        this.velocidad = 10; // Velocidad del misil
+        this.velocidad = 12; // Velocidad óptima para las diagonales
         this.disparado = false;
-        this.direccion = 1; // Por defecto mira a la derecha
+        this.equipado = false; 
+        this.vx = 0;
+        this.vy = 0;
         this.x = x;
         this.y = y;
     }
 
- // Dibuja el proyectil en la pantalla
+    // Dibuja el proyectil en la pantalla rotando según hacia dónde vuela
     public void dibujar(Entorno entorno) {
-        entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.RED);
+        double angulo = 0;
+        if (disparado) {
+            angulo = Math.atan2(vy, vx);
+        }
+        entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, angulo, Color.RED);
     }
-     // Controla toda la lógica del proyectil: el agarre en el suelo,
-     // el seguimiento a la princesa y el avance cuando ya fue lanzado.
     
-    
-    // Actualiza la lógica del proyectil
-    public void actualizar(Princesa princesa, Entorno entorno) {
+    // Actualiza la posición del proyectil
+    public void actualizar(Princesa princesa) {
         if (!disparado) {
-            // SI NO SE DISPARÓ: Sigue a la princesa (un poco más arriba de su centro)
+            // SI NO SE DISPARÓ: Sigue fielmente a la princesa
             this.x = princesa.getX();
             this.y = princesa.getY() - (princesa.getAlto() / 2);
         } else {
-            // SI YA SE DISPARÓ: Se mueve en línea recta en la dirección guardada
-            this.x += (this.velocidad * this.direccion);
+            // SI YA SE DISPARÓ: Se mueve de forma autónoma en la diagonal calculada
+            this.x += this.vx;
+            this.y += this.vy;
         }
     }
-    public void disparar(int direccionPrincesa) {
+
+    // Calcula el vector de velocidad apuntando directamente al mouse (360 grados)
+    public void disparar(int mouseX, int mouseY) {
         if (!this.disparado) {
             this.disparado = true;
-            this.direccion = direccionPrincesa; 
+
+            double deltaX = mouseX - this.x;
+            double deltaY = mouseY - this.y;
+
+            // Calculamos la distancia total (hipotenusa)
+            double distancia = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            // Control de seguridad para evitar división por cero
+            if (distancia == 0) {
+                distancia = 1;
+                deltaX = 1;
+            }
+
+            // Descomposición vectorial de la velocidad
+            this.vx = (deltaX / distancia) * this.velocidad;
+            this.vy = (deltaY / distancia) * this.velocidad;
         }
     }
+
     /**
-     * Controla todo el ciclo de vida del proyectil adaptado a la Princesa original.
+     * Controla todo el ciclo de vida del proyectil.
      * @return true si el proyectil sigue vivo, false si debe destruirse.
      */
     public boolean disparo(Princesa princesa, Entorno entorno) {
         // 1. Dibujarse en la pantalla
         this.dibujar(entorno);
 
-        // 2. Manejar el movimiento (si está en el suelo/equipada o si ya vuela sola)
+        // 2. Manejar el agarre y el seguimiento a la princesa
         if (!this.disparado) {
-            // Colisión matemática exacta usando los getters reales de tu Princesa
-            boolean tocando = (princesa.getX() - princesa.getAncho()/2 < this.x + this.ancho/2 &&
-                               princesa.getX() + princesa.getAncho()/2 > this.x - this.ancho/2 &&
-                               princesa.getY() - princesa.getAlto()/2 < this.y + this.alto/2 &&
-                               princesa.getY() + princesa.getAlto()/2 > this.y - this.alto/2);
-            if (tocando) {
-                this.actualizar(princesa, entorno);
+            if (!this.equipado) {
+                // Caja de colisión para agarrarlo del suelo por primera vez
+                boolean tocando = (princesa.getX() - princesa.getAncho()/2 < this.x + this.ancho/2 &&
+                                   princesa.getX() + princesa.getAncho()/2 > this.x - this.ancho/2 &&
+                                   princesa.getY() - princesa.getAlto()/2 < this.y + this.alto/2 &&
+                                   princesa.getY() + princesa.getAlto()/2 > this.y - this.alto/2);
+                if (tocando) {
+                    this.equipado = true; // Se equipa y no se suelta más
+                }
+            }
+            
+            if (this.equipado) {
+                this.actualizar(princesa);
             }
         } else {
-            this.actualizar(princesa, entorno);
+            this.actualizar(princesa);
         }
 
-        // 3. DETECTAR EL DISPARO (Mirando las teclas del entorno directamente)
-        if (entorno.estaPresionada(entorno.TECLA_ESPACIO) && !this.disparado) {
-            // Si el jugador se mueve a la izquierda al disparar, va hacia la izquierda (-1)
-            if (entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
-                this.disparar(-1);
-            } else { 
-                // Por defecto (parada o caminando a la derecha), dispara a la derecha (1)
-                this.disparar(1);
-            }
+        // 3. DETECTAR EL DISPARO CON EL CLICK DEL MOUSE
+        if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO) && this.equipado && !this.disparado) {
+            this.disparar(entorno.mouseX(), entorno.mouseY());
         }
 
-        // 4. Verificar si se salió del mapa para avisarle al Main que lo borre
+        // 4. Verificar si se salió del mapa (por los costados, arriba o abajo)
         if (this.seSalioDelMapa(entorno)) {
             return false; 
         }
         return true; 
     }
     
-    // Verifica si el proyectil se salió de los límites horizontales del mapa
+    // Verifica si el proyectil se salió de los límites visibles del entorno
     public boolean seSalioDelMapa(Entorno entorno) {
-        if (this.x > entorno.ancho() + 50 || this.x < -50) {
-            return true;
-        }
-        return false;
+        return (this.x > entorno.ancho() + 50 || this.x < -50 || this.y > entorno.alto() + 50 || this.y < -50);
     }
 
     // --- GETTERS Y SETTERS ---
@@ -102,58 +126,34 @@ public class Proyectil {
         return disparado; 
     }
 
-    /**
-	 * @return the x
-	 */
 	public double getX() {
 		return x;
 	}
 
-	/**
-	 * @param x the x to set
-	 */
 	public void setX(double x) {
 		this.x = x;
 	}
 
-	/**
-	 * @return the y
-	 */
 	public double getY() {
 		return y;
 	}
 
-	/**
-	 * @param y the y to set
-	 */
 	public void setY(double y) {
 		this.y = y;
 	}
 
-	/**
-	 * @return the alto
-	 */
 	public double getAlto() {
 		return alto;
 	}
 
-	/**
-	 * @param alto the alto to set
-	 */
 	public void setAlto(double alto) {
 		this.alto = alto;
 	}
 
-	/**
-	 * @return the ancho
-	 */
 	public double getAncho() {
 		return ancho;
 	}
 
-	/**
-	 * @param ancho the ancho to set
-	 */
 	public void setAncho(double ancho) {
 		this.ancho = ancho;
 	}
