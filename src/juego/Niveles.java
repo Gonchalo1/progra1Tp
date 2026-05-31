@@ -14,6 +14,8 @@ public class Niveles {
     private Jefe jefe;
     private JefeProyectil jefeProyectil;
     private JefeProyectil jefeProyectil2;
+    private JefeProyectil jefeProyectil3;
+    private JefeProyectil jefeProyectil4;
     
     private double camaraX = 0;
     private double maxCamara = 4;
@@ -47,8 +49,10 @@ public class Niveles {
         this.proyectil = new Proyectil(300, entorno.alto() - 40);
         this.castillo = null;
         this.jefe = new Jefe(entorno);
-        this.jefeProyectil = new JefeProyectil(0, entorno);
-        this.jefeProyectil2 = new JefeProyectil(1, entorno);
+        this.jefeProyectil = new JefeProyectil(0, 40, entorno);
+        this.jefeProyectil2 = new JefeProyectil(90, 40, entorno);
+        this.jefeProyectil3 = new JefeProyectil(180, 40, entorno);
+        this.jefeProyectil4 = new JefeProyectil(270, 40, entorno);
     }
     
     public void actualizarCamara(Princesa princesa) {
@@ -115,11 +119,22 @@ public class Niveles {
         // 5. Movimiento y render del jefe y sus ataques
         jefe.dibujarJefe();
         jefe.moverJefe();
-        
-        jefeProyectil.moverProyectil();
+        jefeProyectil.moverProyectil(jefe.getX(),jefe.getY());
         jefeProyectil.dibujarJefeProyectil();
-        jefeProyectil2.moverProyectil();
+        jefeProyectil.animacionRadio();
+        
+        jefeProyectil2.moverProyectil(jefe.getX(),jefe.getY());
         jefeProyectil2.dibujarJefeProyectil();
+        jefeProyectil2.animacionRadio();
+        
+        jefeProyectil3.moverProyectil(jefe.getX(),jefe.getY());
+        jefeProyectil3.dibujarJefeProyectil();
+        jefeProyectil3.animacionRadio();
+        
+        jefeProyectil4.moverProyectil(jefe.getX(),jefe.getY());
+        jefeProyectil4.dibujarJefeProyectil();
+        jefeProyectil4.animacionRadio();
+        
     }
 
     public int getNivel() { return nivel; }
