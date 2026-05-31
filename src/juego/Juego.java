@@ -25,11 +25,6 @@ public class Juego extends InterfaceJuego
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Proyecto para TP", 800, 600);
 		
-		
-		
-		
-		
-		
 		// Inicializamos el gestor de niveles
 		this.gestorNiveles = new Niveles(this.entorno);
 		gestorNiveles.inicializarNivel1();
